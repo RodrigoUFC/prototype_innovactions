@@ -1,0 +1,26 @@
+-- Table: qr_codes.codes
+
+-- DROP TABLE qr_codes.codes;
+
+CREATE TABLE qr_codes.codes
+(
+    id integer NOT NULL DEFAULT nextval('qr_codes.codes_id_seq'::regclass),
+    user_email character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    qr_code character varying(200) COLLATE pg_catalog."default" NOT NULL,
+    expires_on date,
+    CONSTRAINT codes_pkey PRIMARY KEY (id),
+    CONSTRAINT codes_qr_code_key UNIQUE (qr_code)
+,
+    CONSTRAINT codes_user_email_fkey FOREIGN KEY (user_email)
+        REFERENCES qr_codes.users (email) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        NOT VALID
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE qr_codes.codes
+    OWNER to postgres;
