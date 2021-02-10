@@ -48,6 +48,17 @@ def save_code(user, code_data):
     db.session.commit()
 
 
+def load_codes(user):
+    code_list = []
+    for values in CodesModel.query.order_by(CodesModel.id).filter(CodesModel.user_email == user.email).all():
+        new_code = Codes()
+        new_code.user_email = values.user_email
+        new_code.qr_code = values.qr_code
+        new_code.expires_on = values.expires_on
+        code_list.append(new_code)
+    return code_list
+
+
 Users.first_name = "Niels"
 Users.last_name = "Bohr"
 Users.password = "nx-01ENT"
@@ -61,8 +72,10 @@ try:
     Codes.qr_code = "www.findit.fr/object#73613?push_greeting"
     print(datetime.now().replace(year=datetime.now().year + 5).strftime("%Y-%m-%d %H:%M"))
     Codes.expires_on = datetime.now().replace(year=datetime.now().year + 5).strftime("%Y-%m-%d %H:%M")
-    save_code(load_user(Users.email, Users.password), Codes)
-    print(Users.last_name)
+    #save_code(load_user(Users.email, Users.password), Codes)
+    codes = load_codes(load_user(Users.email, Users.password))
+    for code in codes:
+        print("Email: ", code.user_email, "QR Code: ", code.qr_code, "Expires on: ", code.expires_on)
 except ValidationError as err:
     errors = err.messages
     valid_data = err.valid_data
